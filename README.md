@@ -1,8 +1,12 @@
 # ♡ Kuromi Themed Calculator
 
-A cute, Kuromi-inspired calculator built with HTML, CSS, and JavaScript, featuring a pastel aesthetic, custom interface, sound effects, and music.
+A Kuromi-inspired calculator featuring a pastel aesthetic, custom interface, sound effects, and background music.
 
-Available as both a **web calculator** and a **Windows desktop application**.
+Built with HTML, CSS, and JavaScript, and packaged as a Windows desktop application using Electron.
+
+<p align="center">
+  **Web Version · Windows Desktop Version**
+</p>
 
 ## ✧ Preview
 
@@ -60,7 +64,8 @@ kuromi-calculator/
 
 ### Desktop Version
 1. Navigate to the `desktop` folder.
-2. Install dependencies using:
+2. Make sure you have Node.js installed.
+3. Install dependencies using:
 
 ```bash
 npm install
@@ -75,3 +80,18 @@ npm start
 ## ✧ Desktop Download
 
 Pre-built Windows versions will be available under [
+
+The build uses Electron Builder with the NSIS Windows installer target.
+
+✧ Download & Releases
+
+Pre-built Windows installers are published through GitHub Releases.
+
+View All Releases
+
+✧ Developer
+
+Created by voltivy ♡
+
+This project explores frontend development, JavaScript functionality, and desktop application development using Electron.
+
