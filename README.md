@@ -10,10 +10,10 @@ Built with HTML, CSS, and JavaScript, and packaged as a Windows desktop applicat
 
 ## ✧ Preview
 
-**Web Version:**  
+**Web Application:**  
 [Open Kuromi Calculator](https://voltivy.github.io/kuromi-calculator/)
 
-**Desktop Version:**  
+**Windows Desktop Application:**  
 Download the Windows application from the [Releases](https://github.com/voltivy/kuromi-calculator/releases) page.
 
 ## ✧ Features
