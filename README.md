@@ -63,9 +63,10 @@ kuromi-calculator/
 2. Open the root `index.html` file in your browser.
 
 ### Desktop Version
-1. Navigate to the `desktop` folder.
-2. Make sure you have Node.js installed.
-3. Install dependencies using:
+1. Clone this repository.
+2. Navigate to the `desktop` folder.
+3. Make sure you have Node.js installed.
+4. Install dependencies using:
 
 ```bash
 npm install
