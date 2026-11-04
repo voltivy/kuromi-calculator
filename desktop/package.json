@@ -1,0 +1,20 @@
+{
+  "name": "pixel-calculator",
+  "productName": "Pixel Calculator",
+  "version": "1.0.0",
+  "description": "Pixel Calculator desktop app",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.local.pixelcalculator",
+    "files": ["main.js", "index.html", "audio/**/*", "fonts/**/*"],
+    "win": { "target": "portable", "artifactName": "${productName}.exe" }
+  },
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  }
+}

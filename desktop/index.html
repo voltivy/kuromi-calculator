@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pixel Calculator</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--page:#f1e8f8;--body:#fbf1ec;--edge:#e3d3dc;--btn:#fffaf6;--btn2:#f3e6e8;--disp:#fffaf3;--txt:#2d1f3b;--dim:#7d6a8f;--lav:#c9a8f0;--pink:#f08cc4;--ink:#1d1822;--shadow:rgba(90,60,120,.25)}
+:root[data-theme="dark"]{--page:#c9bde0;--body:#2a2330;--edge:#0f0c13;--btn:#2b2432;--btn2:#1c1722;--disp:#0b090d;--txt:#d9c2f7;--dim:#8d77ad;--shadow:rgba(20,10,40,.55)}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--page);font-family:"Silkscreen",ui-monospace,Menlo,monospace;color:var(--txt);display:flex;align-items:center;justify-content:center;transition:background .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.calc{width:min(92vw,370px);background:var(--body);border-radius:38px;padding:16px 16px 14px;box-shadow:0 0 0 2px var(--edge),0 24px 40px var(--shadow);position:relative;margin:18px 0;transition:background .3s}
+.screen{background:var(--disp);border-radius:24px 24px 14px 14px;height:150px;padding:14px 18px;display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-end;position:relative;overflow:hidden;box-shadow:inset 0 3px 10px rgba(0,0,0,.35);user-select:none;touch-action:pan-y}
+.screen .deco{position:absolute;top:12px;left:14px;color:var(--lav);display:flex;gap:6px;align-items:center}
+.expr{width:100%;text-align:right;min-height:20px;font-size:14px;color:var(--dim);border-bottom:1px solid var(--lav);padding-bottom:5px;margin-bottom:6px;white-space:nowrap;overflow:hidden}
+.num{font-size:64px;line-height:1;font-weight:400;white-space:nowrap;color:var(--txt)}
+:root[data-theme="dark"] .num{color:#fff}
+.screen.err .num{color:var(--pink);animation:glitch .5s steps(2) 2}
+.screen.err::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(246,140,196,.14) 0 2px,transparent 2px 6px);pointer-events:none}
+@keyframes glitch{0%{transform:translate(0)}25%{transform:translate(-5px,1px);text-shadow:3px 0 #8ff}50%{transform:translate(4px,-1px);text-shadow:-3px 0 #f8c}100%{transform:translate(0)}}
+.bar{display:flex;align-items:center;gap:10px;margin:12px 4px 12px;font-size:12px;color:var(--dim)}
+.toggle{width:54px;height:28px;border-radius:14px;border:2px solid var(--edge);background:var(--btn2);position:relative;cursor:pointer;padding:0;flex:none}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--lav);transition:transform .2s}
+:root[data-theme="dark"] .toggle::after{transform:translateX(26px)}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.k{aspect-ratio:1;border-radius:50%;border:2px solid var(--edge);background:radial-gradient(circle at 35% 25%,var(--btn),var(--btn2));color:var(--txt);font:inherit;font-size:25px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;cursor:pointer;box-shadow:0 5px 0 var(--edge),0 9px 12px var(--shadow);transform:translateY(0);transition:background .12s,color .12s}
+.k:active,.k.down{transform:translateY(4px);box-shadow:0 1px 0 var(--edge),inset 0 4px 8px rgba(0,0,0,.35);background:var(--btn2)}
+.k:focus-visible{outline:3px solid var(--lav);outline-offset:3px}
+.k svg{width:14px;height:auto;fill:var(--lav);image-rendering:pixelated;display:block}
+.k.op.on{background:var(--lav);color:var(--ink)}
+.k.op.on svg{fill:var(--ink)}
+.k.eq{background:radial-gradient(circle at 35% 25%,#e4d0fa,var(--lav));color:var(--ink);border-color:#a98bd6}
+.k.eq svg{fill:var(--ink)}
+.k.eq:active{background:#b799e3}
+.border{display:flex;justify-content:center;gap:8px;margin-top:18px;color:var(--lav);align-items:center}
+.border i{width:4px;height:4px;background:var(--lav);opacity:.6}
+.hint{text-align:center;font-size:10px;color:var(--dim);margin-top:10px}
+@media (prefers-reduced-motion:reduce){.screen.err .num{animation:none}.toggle::after,.k,body{transition:none}}
+.volt-logo {
+    text-align: center;
+    margin-top: 14px;
+    font-family: "Silkscreen", monospace;
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--lav);
+    text-shadow:
+        2px 2px 0 var(--dim),
+        4px 4px 0 rgba(0,0,0,0.25);
+    image-rendering: pixelated;
+    user-select: none;
+}
+
+.volt-logo span {
+    font-size: 8px;
+    vertical-align: top;
+    letter-spacing: 0;
+}
+</style>
+</head>
+<body>
+<main class="calc">
+  <audio id="bgMusic" loop>
+    <source src="audio/background.mp3" type="audio/mpeg">
+</audio>
+  <div class="screen" id="screen" aria-live="polite">
+    <span class="deco" id="deco"></span>
+    <div class="expr" id="expr"></div>
+    <div class="num" id="num">0</div>
+  </div>
+  <div class="bar">
+    <button class="toggle" id="theme" aria-label="Toggle night mode"></button>
+    <button class="toggle" id="musicToggle" aria-label="Toggle music">
+    ♫
+</button>
+    <span id="themeLabel">Night mode</span>
+  </div>
+  <div class="keys" id="keys"></div>
+  <div class="border" id="border"></div>
+  <div class="hint">swipe the screen to delete a digit</div>
+  <div class="volt-logo">VOLT<span>™</span></div>
+</main>
+<script>
+// ---------- pixel icons (swap for your own PNGs later) ----------
+const ICONS={
+ heart:[".##.##.","#######","#######",".#####.","..###..","...#..."],
+ skull:[".#####.","#######","##.#.##","#######",".#####.",".#.#.#."],
+ bow:["##.....##","###...###","#########","###...###","##.....##"]
+};
+function icon(n){const m=ICONS[n],w=m[0].length;let r="";
+ m.forEach((row,y)=>[...row].forEach((c,x)=>{if(c==="#")r+=`<rect x="${x}" y="${y}" width="1" height="1"/>`}));
+ return `<svg viewBox="0 0 ${w} ${m.length}" shape-rendering="crispEdges" aria-hidden="true">${r}</svg>`}
+ 
+// ---------- calculator brain (no UI in here) ----------
+const SYM={"+":"+","-":"−","*":"×","/":"÷"};
+function Calc(){
+ let s;
+ const reset=()=>{s={cur:"0",t:[],fresh:false,afterOp:false,dirty:false,err:false,justEq:false,last:null,expr:""}};
+ reset();
+ const num=()=>parseFloat(s.cur);
+ const clean=v=>{
+  if(!isFinite(v))return null;
+  v=parseFloat(v.toPrecision(12));const a=Math.abs(v);
+  if(a!==0&&(a>=1e9||a<1e-6))return v.toExponential(4).replace(/\.?0+e/,"e");
+  let str=String(v);
+  if(str.replace(/[-.]/g,"").length>9)str=String(parseFloat(v.toPrecision(9)));
+  return str};
+ const ap=(a,o,b)=>o==="+"?a+b:o==="-"?a-b:o==="*"?a*b:(b===0?NaN:a/b);
+ const ev=t=>{t=t.slice();
+  for(const g of [["*","/"],["+","-"]])
+   for(let i=1;i<t.length;i+=2)if(g.includes(t[i])){t.splice(i-1,3,ap(t[i-1],t[i],t[i+1]));i-=2}
+  return t[0]};
+ const show=v=>{const c=clean(v);if(c===null){s.err=true;s.cur="Error"}else s.cur=c};
+ function press(k){
+  if(s.err){if(k==="clr")reset();return}
+  if(/^\d$/.test(k)||k==="."){
+   if(s.justEq){s.t=[];s.expr="";s.justEq=false;s.fresh=true}
+   if(s.fresh){s.cur="0";s.fresh=false}
+   s.afterOp=false;s.dirty=true;
+   if(k===".")(!s.cur.includes("."))&&(s.cur+=".");
+   else{const d=s.cur.replace(/[-.]/g,"").length;
+    if(s.cur==="0")s.cur=k;else if(s.cur==="-0")s.cur="-"+k;else if(d<9)s.cur+=k}
+   return}
+  if("+-*/".includes(k)){
+   if(s.afterOp){s.t[s.t.length-1]=k;return}
+   s.t.push(num(),k);s.afterOp=true;s.fresh=true;s.justEq=false;s.expr="";
+   if(k==="+"||k==="-")show(ev(s.t.slice(0,-1)));
+   return}
+  if(k==="="){
+   if(!s.t.length){
+    if(s.last){const a=num(),r=ap(a,s.last[0],s.last[1]);
+     s.expr=`${clean(a)} ${SYM[s.last[0]]} ${clean(s.last[1])} =`;show(r);s.fresh=true;s.justEq=true}
+    return}
+   const t=s.t.slice();t.push(num());
+   s.last=[t[t.length-2],t[t.length-1]];
+   s.expr=t.map(x=>typeof x==="number"?(clean(x)??x):SYM[x]).join(" ")+" =";
+   show(ev(t));s.t=[];s.fresh=true;s.justEq=true;s.afterOp=false;return}
+  if(k==="%"){
+   let v=num();const l=s.t[s.t.length-1];
+   if(l==="+"||l==="-")v=ev(s.t.slice(0,-1))*v/100;else v/=100;
+   show(v);s.fresh=true;s.afterOp=false;s.dirty=true;return}
+  if(k==="neg"){
+   if(s.afterOp){s.cur="-0";s.fresh=false;s.afterOp=false;s.dirty=true}
+   else s.cur=s.cur[0]==="-"?s.cur.slice(1):"-"+s.cur;
+   return}
+  if(k==="back"){
+   if(s.fresh||s.afterOp)return;
+   s.cur=s.cur.slice(0,-1);if(s.cur===""||s.cur==="-")s.cur="0";return}
+  if(k==="clr"){
+   if(s.dirty){s.cur="0";s.dirty=false;s.fresh=false;}
+   else reset();
+   return}
+ }
+ const disp=()=>{
+  if(s.err)return"Error";
+  const m=s.cur.match(/^(-?)(\d+)(\.\d*)?$/);
+  return m?m[1]+m[2].replace(/\B(?=(\d{3})+(?!\d))/g,",")+(m[3]||""):s.cur};
+ const exprLine=()=>s.expr||s.t.map(x=>typeof x==="number"?(clean(x)??x):SYM[x]).join(" ");
+ return{press,disp,exprLine,
+  get label(){return s.dirty?"C":"AC"},
+  get active(){return s.afterOp?s.t[s.t.length-1]:null},
+  get err(){return s.err}}
+}
+ 
+// ---------- self tests (open the console to see them) ----------
+(function(){
+ const map={"<":"back","n":"neg","C":"clr"};
+ const run=q=>{const c=Calc();[...q].forEach(ch=>c.press(map[ch]||ch));return c.disp()};
+ const T=[["0.1+0.2=","0.3"],["2+3*4=","14"],["5+2===","11"],["200+10%","20"],["200+10%=","220"],
+  ["200*10%=","20"],["1/0=","Error"],["5+*3=","15"],["789<<","7"],["1234567890","123,456,789"],
+  ["5+=","10"],["9n","-9"],["0n","-0"],["1/3=","0.333333333"],["99999999*99=","9.9e+9"]];
+ const bad=T.filter(([q,e])=>run(q)!==e);
+ console.log(bad.length?"Calculator tests FAILED:":"All "+T.length+" calculator tests passed",bad.map(([q,e])=>q+" expected "+e+" got "+run(q)));
+})();
+ 
+// ---------- UI ----------
+const calc=Calc();
+const $=id=>document.getElementById(id);
+const LAYOUT=[
+ ["clr","AC","skull","fn"],["neg","±","bow","fn"],["%","%","heart","fn"],["/","÷","bow","op"],
+ ["7","7","heart"],["8","8","heart"],["9","9","heart"],["*","×","bow","op"],
+ ["4","4","heart"],["5","5","heart"],["6","6","heart"],["-","−","skull","op"],
+ ["1","1","heart"],["2","2","heart"],["3","3","heart"],["+","+","bow","op"],
+ ["0","0","skull"],[".",".","heart"],["back","⌫","bow","fn"],["=","=","skull","eq"]];
+const keysEl=$("keys");
+LAYOUT.forEach(([k,l,ic,type])=>{
+ const b=document.createElement("button");
+ b.className="k "+(type||"");b.dataset.k=k;b.type="button";
+ b.innerHTML=`<span class="lab">${l}</span>${icon(ic)}`;
+ b.setAttribute("aria-label",({clr:"clear","*":"multiply","/":"divide","-":"subtract","+":"add","=":"equals",back:"delete",neg:"plus minus","%":"percent",".":"decimal point"})[k]||k);
+ keysEl.appendChild(b)});
+$("deco").innerHTML=icon("heart");
+$("border").innerHTML=[...Array(3)].map(()=>"<i></i>").join("")+icon("heart")+[...Array(2)].map(()=>"<i></i>").join("")+icon("bow")+[...Array(2)].map(()=>"<i></i>").join("")+icon("heart")+[...Array(3)].map(()=>"<i></i>").join("");
+document.querySelectorAll(".border svg").forEach(s=>s.style.cssText="width:14px;fill:var(--lav)");
+ 
+function render(){
+ const d=calc.disp(),n=$("num");
+ n.textContent=d;
+ n.style.fontSize=Math.min(64,Math.floor(300/Math.max(d.length,5)*1.18))+"px";
+ $("expr").textContent=calc.exprLine();
+ $("screen").classList.toggle("err",calc.err);
+ keysEl.querySelector('[data-k="clr"] .lab').textContent=calc.label;
+ const a=calc.active;
+ keysEl.querySelectorAll(".op").forEach(b=>b.classList.toggle("on",b.dataset.k===a));
+}
+function press(k){calc.press(k);render()}
+keysEl.addEventListener("click",e=>{const b=e.target.closest(".k");if(b)press(b.dataset.k)});
+render();
+ 
+// keyboard
+const KM={Enter:"=","=":"=",Backspace:"back",Escape:"clr",Delete:"clr","%":"%",".":".",",":".","+":"+","-":"-","*":"*","x":"*","/":"/"};
+addEventListener("keydown",e=>{
+ if(e.metaKey||e.ctrlKey||e.altKey)return;
+ const k=/^\d$/.test(e.key)?e.key:KM[e.key];
+ if(!k)return;e.preventDefault();press(k);
+ const b=keysEl.querySelector(`[data-k="${CSS.escape(k)}"]`);
+ if(b){b.classList.add("down");setTimeout(()=>b.classList.remove("down"),110)}});
+ 
+// swipe to delete + long-press to copy
+let sx=null,lp=null;
+const scr=$("screen");
+scr.addEventListener("pointerdown",e=>{sx=e.clientX;lp=setTimeout(()=>{try{navigator.clipboard.writeText(calc.disp().replace(/,/g,""))}catch(_){}lp=null},600)});
+scr.addEventListener("pointerup",e=>{clearTimeout(lp);if(sx!==null&&Math.abs(e.clientX-sx)>30)press("back");sx=null});
+scr.addEventListener("pointercancel",()=>{clearTimeout(lp);sx=null});
+ 
+// theme
+const root=document.documentElement;
+$("theme").addEventListener("click",()=>{
+ const dark=root.dataset.theme==="dark";
+ root.dataset.theme=dark?"light":"dark";
+ $("themeLabel").textContent=dark?"Day mode":"Night mode"});
+ // ======================================
+// VOLT AUDIO SYSTEM
+// ======================================
+
+// Background music
+const bgMusic = document.getElementById("bgMusic");
+const musicToggle = document.getElementById("musicToggle");
+
+bgMusic.volume = 0.20;
+
+let musicPlaying = false;
+
+// Music toggle
+musicToggle.addEventListener("click", async () => {
+
+    if (!musicPlaying) {
+
+        try {
+            await bgMusic.play();
+            musicPlaying = true;
+
+            musicToggle.style.background = "var(--lav)";
+
+        } catch (error) {
+            console.log("Music could not start:", error);
+        }
+
+    } else {
+
+        bgMusic.pause();
+        musicPlaying = false;
+
+        musicToggle.style.background = "var(--btn2)";
+    }
+});
+
+
+// ======================================
+// PIXEL BUTTON SOUND EFFECTS
+// ======================================
+
+let audioContext;
+
+function playClickSound(type = "normal") {
+
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    const now = audioContext.currentTime;
+
+    // Different sounds for different buttons
+    let frequency = 600;
+    let duration = 0.07;
+    let volume = 0.12;
+    let wave = "square";
+
+    if (type === "normal") {
+        frequency = 650;
+        duration = 0.045;
+    }
+
+    if (type === "operator") {
+        frequency = 450;
+        duration = 0.08;
+    }
+
+    if (type === "equal") {
+        frequency = 950;
+        duration = 0.14;
+    }
+
+    if (type === "clear") {
+        frequency = 250;
+        duration = 0.12;
+    }
+
+    if (type === "delete") {
+        frequency = 350;
+        duration = 0.06;
+    }
+
+    oscillator.type = wave;
+
+    oscillator.frequency.setValueAtTime(frequency, now);
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+        frequency * 0.65,
+        now + duration
+    );
+
+    gain.gain.setValueAtTime(volume, now);
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        now + duration
+    );
+
+    oscillator.start(now);
+    oscillator.stop(now + duration);
+}
+
+
+// ======================================
+// CONNECT SOUNDS TO CALCULATOR BUTTONS
+// ======================================
+
+keysEl.addEventListener("click", (e) => {
+
+    const button = e.target.closest(".k");
+
+    if (!button) return;
+
+    const key = button.dataset.k;
+
+    let soundType = "normal";
+
+    if (key === "=") {
+        soundType = "equal";
+    }
+
+    else if (key === "clr") {
+        soundType = "clear";
+    }
+
+    else if (key === "back") {
+        soundType = "delete";
+    }
+
+    else if (["+", "-", "*", "/", "%"].includes(key)) {
+        soundType = "operator";
+    }
+
+    playClickSound(soundType);
+
+});
+</script>
+</body>
+</html>

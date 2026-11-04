@@ -1,0 +1,9 @@
+{
+  "name": "My Skin",
+  "buttons": {
+    "digit": "buttons/digit.png",
+    "operator": "buttons/operator.png",
+    "function": "buttons/function.png",
+    "equals": "buttons/equals.png"
+  }
+}

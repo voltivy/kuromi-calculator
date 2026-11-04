@@ -1,0 +1,12 @@
+# Don't upload Node.js dependencies
+desktop/node_modules/
+
+# Ignore temporary build information
+desktop/dist/builder-debug.yml
+desktop/dist/builder-effective-config.yaml
+
+# Ignore log files
+*.log
+
+# Ignore packaged desktop builds
+desktop/dist/
